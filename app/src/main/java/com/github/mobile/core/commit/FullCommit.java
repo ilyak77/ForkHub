@@ -114,22 +114,6 @@ public class FullCommit extends ArrayList<CommitComment> implements
         }
     }
 
-
-//    public void add(final CommitComment comment){
-//
-//        String path = comment.getPath();
-//
-//
-//
-//
-//    }
-
-
-
-
-
-
-
     /**
      * @return files
      */
