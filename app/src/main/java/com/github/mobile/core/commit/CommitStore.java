@@ -66,27 +66,75 @@ public class CommitStore extends ItemStore {
      */
     public RepositoryCommit addCommit(IRepositoryIdProvider repo,
             RepositoryCommit commit) {
+
+        setCommitment(repo, commit);
+        RepositoryCommit current = getCommitment(repo, commit);
+
+        return current;
+    }
+/*
+ * Contract Version
+ * addCommit(commit: repo) :
+ *       --add the commit to the repo and return the commit
+ *
+ * which is equal to setCommitment and getCommitment
+ * setCommitment(commit : repo):
+ *          -- add the commit to the repo, update if already exist
+ *          require:  -- pre-condition
+ *              commit is valid, with getSha() method;
+ *              repo is valid
+ *          ensure:  -- post-condition
+ *              size_of_repo:
+ *                  count += 1
+ *
+ * getCommitment(commit : repo) :
+ *          -- return the commit from repo
+ *          require:
+ *              size_of_repo:
+ *                  count > 0
+ *          ensure:
+ *              commit is valid , not null
+ *
+ */
+    private void setCommitment(IRepositoryIdProvider repo,
+                               RepositoryCommit commit){
         RepositoryCommit current = getCommit(repo, commit.getSha());
         if (current != null) {
-            current.setAuthor(commit.getAuthor());
-            current.setCommit(commit.getCommit());
-            current.setCommitter(commit.getCommitter());
-            current.setFiles(commit.getFiles());
-            current.setParents(commit.getParents());
-            current.setSha(commit.getSha());
-            current.setStats(commit.getStats());
-            current.setUrl(commit.getUrl());
-            return current;
+            setCurrentCommit(current, commit);
         } else {
-            String repoId = repo.generateId();
-            ItemReferences<RepositoryCommit> repoCommits = commits.get(repoId);
-            if (repoCommits == null) {
-                repoCommits = new ItemReferences<RepositoryCommit>();
-                commits.put(repoId, repoCommits);
-            }
-            repoCommits.put(commit.getSha(), commit);
-            return commit;
+            putCommit(repo, commit);
         }
+
+        return;
+
+    }
+
+    private RepositoryCommit getCommitment(IRepositoryIdProvider repo,
+                                           RepositoryCommit commit){
+        RepositoryCommit commitment = getCommit(repo, commit.getSha());
+        return commitment;
+    }
+
+    private void setCurrentCommit(RepositoryCommit current, RepositoryCommit commit){
+        current.setAuthor(commit.getAuthor());
+        current.setCommit(commit.getCommit());
+        current.setCommitter(commit.getCommitter());
+        current.setFiles(commit.getFiles());
+        current.setParents(commit.getParents());
+        current.setSha(commit.getSha());
+        current.setStats(commit.getStats());
+        current.setUrl(commit.getUrl());
+    }
+
+    private void putCommit(IRepositoryIdProvider repo,
+                           RepositoryCommit commit){
+        String repoId = repo.generateId();
+        ItemReferences<RepositoryCommit> repoCommits = commits.get(repoId);
+        if (repoCommits == null) {
+            repoCommits = new ItemReferences<RepositoryCommit>();
+            commits.put(repoId, repoCommits);
+        }
+        repoCommits.put(commit.getSha(), commit);
     }
 
     /**
