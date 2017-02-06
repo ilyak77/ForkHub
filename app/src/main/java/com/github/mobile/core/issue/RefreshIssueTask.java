@@ -17,6 +17,7 @@ package com.github.mobile.core.issue;
 
 import android.accounts.Account;
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 
 import com.github.mobile.accounts.AuthenticatedUserTask;
@@ -26,6 +27,9 @@ import com.github.mobile.api.service.PaginationService;
 import com.github.mobile.api.model.ReactionSummary;
 import com.github.mobile.util.HtmlUtils;
 import com.github.mobile.util.HttpImageGetter;
+import com.github.mobile.util.HttpImageGetterClient;
+import com.github.mobile.util.ImageClientFactory;
+import com.github.mobile.util.ImageGetterClient;
 import com.google.inject.Inject;
 
 import java.io.IOException;
@@ -51,9 +55,11 @@ public class RefreshIssueTask extends AuthenticatedUserTask<FullIssue> {
 
     private final int issueNumber;
 
-    private final HttpImageGetter bodyImageGetter;
+    private final ImageGetterClient bodyImageGetter;
 
-    private final HttpImageGetter commentImageGetter;
+    private final ImageGetterClient commentImageGetter;
+
+    private final ImageClientFactory imageClientFactory;
 
     /**
      * Create task to refresh given issue
@@ -66,13 +72,14 @@ public class RefreshIssueTask extends AuthenticatedUserTask<FullIssue> {
      */
     public RefreshIssueTask(Context context,
             IRepositoryIdProvider repositoryId, int issueNumber,
-            HttpImageGetter bodyImageGetter, HttpImageGetter commentImageGetter) {
+            HttpImageGetterClient bodyImageGetter, HttpImageGetterClient commentImageGetter) {
         super(context);
 
         this.repositoryId = repositoryId;
         this.issueNumber = issueNumber;
-        this.bodyImageGetter = bodyImageGetter;
-        this.commentImageGetter = commentImageGetter;
+        this.imageClientFactory = new ImageClientFactory();
+        this.bodyImageGetter = imageClientFactory.init(bodyImageGetter, "Http");
+        this.commentImageGetter = imageClientFactory.init(commentImageGetter, "Http");
     }
 
     @Override
