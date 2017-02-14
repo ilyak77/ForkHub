@@ -16,13 +16,13 @@
 package com.github.mobile.core.commit;
 
 import com.github.mobile.core.ItemStore;
+import com.github.mobile.core.commit.RepositoryCommit;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.egit.github.core.IRepositoryIdProvider;
-import org.eclipse.egit.github.core.RepositoryCommit;
 import org.eclipse.egit.github.core.service.CommitService;
 
 /**
@@ -51,7 +51,7 @@ public class CommitStore extends ItemStore {
      * @return commit or null if not in store
      */
     public RepositoryCommit getCommit(final IRepositoryIdProvider repo,
-                                      final String id) {
+                                                                    final String id) {
         final ItemReferences<RepositoryCommit> repoCommits = commits.get(repo
                 .generateId());
         return repoCommits != null ? repoCommits.get(id) : null;
@@ -68,15 +68,18 @@ public class CommitStore extends ItemStore {
                                       RepositoryCommit commit) {
         RepositoryCommit current = getCommit(repo, commit.getSha());
         if (current != null) {
-            current.setAuthor(commit.getAuthor());
-            current.setCommit(commit.getCommit());
-            current.setCommitter(commit.getCommitter());
-            current.setFiles(commit.getFiles());
-            current.setParents(commit.getParents());
-            current.setSha(commit.getSha());
-            current.setStats(commit.getStats());
-            current.setUrl(commit.getUrl());
+            current =  new  RepositoryCommit(
+                            new RepositoryCommit.CommitBuilder()
+                                            .stats(commit.getStats())
+                                            .parents(commit.getParents())
+                                            .files(commit.getFiles())
+                                            .sha(commit.getSha())
+                                            .url(commit.getUrl())
+                                            .author(commit.getAuthor())
+                                            .committer(commit.getCommitter())
+                            );
             return current;
+
         } else {
             String repoId = repo.generateId();
             ItemReferences<RepositoryCommit> repoCommits = commits.get(repoId);
