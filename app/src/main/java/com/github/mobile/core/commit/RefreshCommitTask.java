@@ -86,8 +86,9 @@ public class RefreshCommitTask extends AuthenticatedUserTask<FullCommit> {
 
     @Override
     protected void onException(Exception e) throws RuntimeException {
-        super.onException(e);
+        // super.onException(e);
 
-        Log.d(TAG, "Exception loading commit", e);
+        // Log.d(TAG, "Exception loading commit", e);
     }
+
 }
