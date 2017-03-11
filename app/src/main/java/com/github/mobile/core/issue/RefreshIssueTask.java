@@ -72,14 +72,15 @@ public class RefreshIssueTask extends AuthenticatedUserTask<FullIssue> {
      */
     public RefreshIssueTask(Context context,
             IRepositoryIdProvider repositoryId, int issueNumber,
-            HttpImageGetterClient bodyImageGetter, HttpImageGetterClient commentImageGetter) {
+            HttpImageGetterClient bodyImageGetter, HttpImageGetterClient commentImageGetter) throws Exception{
         super(context);
 
         this.repositoryId = repositoryId;
         this.issueNumber = issueNumber;
         this.imageClientFactory = new ImageClientFactory();
-        this.bodyImageGetter = imageClientFactory.init(bodyImageGetter, "Http");
-        this.commentImageGetter = imageClientFactory.init(commentImageGetter, "Http");
+        this.bodyImageGetter = imageClientFactory.init("Http");
+        this.commentImageGetter = imageClientFactory.init("Http");
+        // this.someImageGetter = imageClientFactory.init("Ftp");
     }
 
     @Override
